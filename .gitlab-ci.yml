@@ -1,0 +1,24 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  VERSION: "1.1"
+
+criar_imagens:
+  stage: build
+  tags:
+    - local
+  script:
+  - docker build -t vinitxc/projeto-bootcamp:$VERSION app/.
+  - docker push vinitxc/projeto-bootcamp:$VERSION
+
+docker:
+  stage: deploy
+  tags:
+    - local
+  needs:
+    - criar_imagens
+  script:
+  - docker rm web-server --force
+  - docker run -dti -p 80:80 --name web-server vinitxc/projeto-bootcamp:$VERSION
